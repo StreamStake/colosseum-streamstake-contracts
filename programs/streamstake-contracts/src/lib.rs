@@ -13,11 +13,8 @@ pub mod streamstake_contracts {
     // }
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("Greetings from: {:?}", ctx.program_id);
-        let counter = &mut ctx.accounts.counter;
-        counter.count = 0;
-        msg!("Counter account created");
-        msg!("Current count: { }", counter.count);
+        let state = &mut ctx.accounts.state;
+        state.owner = *ctx.accounts.owner.key;
         Ok(())
     }
 }
@@ -35,4 +32,26 @@ pub struct Initialize<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Deposit<'info> {
+    #[account(mut)]
+    pub state: Account<'info, State>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(mut)]
+    pub user_account: SystemAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct TransferSol<'info> {
+    #[account(mut)]
+    pub state: Account<'info, State>,
+    #[account(mut)]
+    pub to: SystemAccount<'info>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    pub system_program:Program<'info, System>
 }
